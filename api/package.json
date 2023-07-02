@@ -1,0 +1,26 @@
+{
+  "name": "api",
+  "version": "1.0.42",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "bun run --watch src/index.ts",
+    "db:gen": "drizzle-kit generate:pg"
+  },
+  "dependencies": {
+    "@bogeychan/elysia-logger": "^0.0.2",
+    "@elysiajs/cookie": "^0.5.2",
+    "@elysiajs/lucia-auth": "latest",
+    "@lucia-auth/adapter-postgresql": "^1.0.1",
+    "@paralleldrive/cuid2": "^2.2.1",
+    "@types/pg": "^8.10.2",
+    "drizzle-orm": "latest",
+    "elysia": "latest",
+    "pino-pretty": "^10.0.0",
+    "postgres": "^3.3.5"
+  },
+  "devDependencies": {
+    "bun-types": "latest",
+    "drizzle-kit": "latest"
+  },
+  "module": "src/index.js"
+}
