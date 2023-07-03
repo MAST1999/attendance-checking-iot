@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "18735f52-e5a9-43db-b4ee-45401d8b3d0b",
+  "id": "d94e7aad-0bdb-46a8-ac4d-96b622c72601",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "auth_key": {
@@ -202,30 +202,23 @@
           "notNull": true,
           "autoincrement": false
         },
-        "course_duration": {
-          "name": "course_duration",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "course_date": {
-          "name": "course_date",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "course_start_time": {
-          "name": "course_start_time",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "class_id": {
           "name": "class_id",
           "type": "text(10)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "first_session": {
+          "name": "first_session",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "second_session": {
+          "name": "second_session",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -234,14 +227,13 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {
-        "professors_courses_course_id_group_id_course_duration_class_id_course_date_course_start_time_pk": {
+        "professors_courses_course_id_group_id_class_id_first_session_second_session_pk": {
           "columns": [
             "class_id",
-            "course_date",
-            "course_duration",
             "course_id",
-            "course_start_time",
-            "group_id"
+            "first_session",
+            "group_id",
+            "second_session"
           ]
         }
       }

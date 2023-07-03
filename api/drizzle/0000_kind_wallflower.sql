@@ -36,11 +36,10 @@ CREATE TABLE `course` (
 CREATE TABLE `professors_courses` (
 	`course_id` text(10) NOT NULL,
 	`group_id` text(10) NOT NULL,
-	`course_duration` real,
-	`course_date` integer,
-	`course_start_time` integer,
-	`class_id` text(10),
-	PRIMARY KEY(`class_id`, `course_date`, `course_duration`, `course_id`, `course_start_time`, `group_id`)
+	`class_id` text(10) NOT NULL,
+	`first_session` integer NOT NULL,
+	`second_session` integer,
+	PRIMARY KEY(`class_id`, `course_id`, `first_session`, `group_id`, `second_session`)
 );
 --> statement-breakpoint
 CREATE TABLE `student_info` (

@@ -28,19 +28,17 @@ export const professorToCourse = sqliteTable(
       // change this when using custom user ids
       length: 10,
     }).notNull(),
-    duration: real("course_duration"),
-    date: integer("course_date", { mode: "timestamp" }),
-    startTime: integer("course_start_time", { mode: "timestamp" }),
-    class: text("class_id", { length: 10 }),
+    class: text("class_id", { length: 10 }).notNull(),
+    firstSession: integer("first_session", { mode: "timestamp" }).notNull(),
+    secondSession: integer("second_session", { mode: "timestamp" }),
   },
   (t) => ({
     pk: primaryKey(
       t.courseId,
       t.professorId,
-      t.duration,
       t.class,
-      t.date,
-      t.startTime
+      t.firstSession,
+      t.secondSession
     ),
   })
 );

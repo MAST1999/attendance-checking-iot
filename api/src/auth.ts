@@ -13,9 +13,12 @@ import { stream } from ".";
 import { course, professorToCourse } from "./schema/courseSchema";
 import { ne } from "drizzle-orm";
 import { Database } from "bun:sqlite";
+import { TSchema } from "@sinclair/typebox";
 
 const sqlite = new Database(process.env.DATABASE_URL);
 const createId = init({ length: 10 });
+
+const Nullable = <T extends TSchema>(schema: T) => t.Union([schema, t.Null()]);
 
 export const db = drizzle(sqlite, { schema });
 
@@ -63,13 +66,17 @@ export const auth = (app: Elysia) =>
               role: "user",
             },
           })) as { userId: string; personnelId: string };
-          db.insert(userInfo).values({
-            isProfessor,
-            id: createId(),
-            firstname,
-            lastname,
-            userId: user.userId,
-          });
+
+          db.insert(userInfo)
+            .values({
+              isProfessor,
+              id: createId(),
+              firstname,
+              lastname,
+              userId: user.userId,
+            })
+            .run();
+
           log.info(user, "Created New User");
           return user;
         },
@@ -120,7 +127,7 @@ export const auth = (app: Elysia) =>
         "/profile",
         async ({ cookie: { session } }) => {
           const { userId: id } = await lucia.getSession(session);
-          const userInfo = await db.query.user.findFirst({
+          const userInfo = db.query.user.findFirst({
             where(fields, operators) {
               return operators.eq(fields.id, id);
             },
@@ -163,7 +170,7 @@ export const auth = (app: Elysia) =>
         async ({ cookie: { session }, set }) => {
           const { userId: id } = await lucia.getSession(session);
 
-          const user = await db.query.user.findFirst({
+          const user = db.query.user.findFirst({
             where(fields, operators) {
               return operators.eq(fields.id, id);
             },
@@ -186,7 +193,7 @@ export const auth = (app: Elysia) =>
       .post(
         "/course",
         async ({ body, log }) => {
-          const createdCourse = await db
+          const createdCourse = db
             .insert(course)
             .values({ id: createId(), ...body })
             .returning();
@@ -202,16 +209,17 @@ export const auth = (app: Elysia) =>
           }),
         }
       )
-      .get("/course", async () => {
-        return await db.query.course.findMany();
+      .get("/course", () => {
+        return db.query.course.findMany();
       })
       .post(
         "/new-class",
-        async ({ body, log }) => {
-          const newClass = await db
+        ({ body, log }) => {
+          const newClass = db
             .insert(professorToCourse)
             .values({ ...body })
             .returning();
+
           log.info(newClass, "New Class registered");
           return newClass;
         },
@@ -220,13 +228,13 @@ export const auth = (app: Elysia) =>
             class: t.String({ maxLength: 10 }),
             professorId: t.String({ minLength: 10 }),
             courseId: t.String({ minLength: 10 }),
-            dates: t.Array(t.Date()),
-            sessionIntervals: t.Array(t.String()),
+            firstSession: t.Date(),
+            secondSession: Nullable(t.Date()),
           }),
         }
       )
-      .get("/all-users", async () => {
-        return await db.query.user.findMany({
+      .get("/all-users", () => {
+        return db.query.user.findMany({
           where: ne(user.id, "adminuser1"),
           with: { userInfo: true },
         });
