@@ -1,20 +1,18 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import postgres from "pg";
-import { pg } from "@lucia-auth/adapter-postgresql";
 import { schema } from "./schema/schema";
 import Lucia from "@elysiajs/lucia-auth";
-import { migrate } from "drizzle-orm/postgres-js/migrator";
+import { migrate } from "drizzle-orm/bun-sqlite/migrator";
+import { Database } from "bun:sqlite";
+import { drizzle } from "drizzle-orm/bun-sqlite";
+import { betterSqlite3 } from "@lucia-auth/adapter-sqlite";
 
-const connectionPool = new postgres.Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+const sqlite = new Database(process.env.DATABASE_URL);
 
-const db = drizzle(connectionPool, { schema });
+const db = drizzle(sqlite, { schema });
 
-await migrate(db, { migrationsFolder: "drizzle" });
+migrate(db, { migrationsFolder: "drizzle" });
 
 const lucia = Lucia({
-  adapter: pg(connectionPool),
+  adapter: betterSqlite3(sqlite),
   transformDatabaseUser: (databaseUser) => {
     return {
       userId: databaseUser.id,
@@ -27,7 +25,7 @@ const lucia = Lucia({
   },
 });
 
-const superUser = await db.query.user.findFirst({
+const superUser = db.query.user.findFirst({
   where(fields, operators) {
     return operators.eq(fields.role, "admin");
   },

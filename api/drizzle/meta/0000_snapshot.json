@@ -1,130 +1,111 @@
 {
   "version": "5",
-  "dialect": "pg",
-  "id": "511bf387-9211-4175-9264-f9141fe6793f",
+  "dialect": "sqlite",
+  "id": "18735f52-e5a9-43db-b4ee-45401d8b3d0b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "auth_key": {
       "name": "auth_key",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
+          "type": "text(255)",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "user_id": {
           "name": "user_id",
-          "type": "varchar(15)",
+          "type": "text(15)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "primary_key": {
           "name": "primary_key",
-          "type": "boolean",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "hashed_password": {
           "name": "hashed_password",
-          "type": "varchar(255)",
+          "type": "text(255)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "expires": {
           "name": "expires",
-          "type": "bigint",
+          "type": "blob",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "auth_key_user_id_auth_user_id_fk": {
-          "name": "auth_key_user_id_auth_user_id_fk",
-          "tableFrom": "auth_key",
-          "tableTo": "auth_user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {}
     },
     "auth_session": {
       "name": "auth_session",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(128)",
+          "type": "text(128)",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "user_id": {
           "name": "user_id",
-          "type": "varchar(15)",
+          "type": "text(15)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "active_expires": {
           "name": "active_expires",
-          "type": "bigint",
+          "type": "blob",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "idle_expires": {
           "name": "idle_expires",
-          "type": "bigint",
+          "type": "blob",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "auth_session_user_id_auth_user_id_fk": {
-          "name": "auth_session_user_id_auth_user_id_fk",
-          "tableFrom": "auth_session",
-          "tableTo": "auth_user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {}
     },
     "auth_user": {
       "name": "auth_user",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(15)",
+          "type": "text(15)",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "personnel_id": {
           "name": "personnel_id",
-          "type": "varchar(10)",
+          "type": "text(10)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "role": {
           "name": "role",
-          "type": "varchar",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -133,79 +114,71 @@
     },
     "user_info": {
       "name": "user_info",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(10)",
+          "type": "text(10)",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "user_id": {
           "name": "user_id",
-          "type": "varchar(15)",
+          "type": "text(15)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "firstname": {
           "name": "firstname",
-          "type": "varchar(50)",
+          "type": "text(50)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "lastname": {
           "name": "lastname",
-          "type": "varchar(50)",
+          "type": "text(50)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "is_professor": {
           "name": "is_professor",
-          "type": "boolean",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
+          "autoincrement": false,
           "default": false
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "user_info_user_id_auth_user_id_fk": {
-          "name": "user_info_user_id_auth_user_id_fk",
-          "tableFrom": "user_info",
-          "tableTo": "auth_user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {}
     },
     "course": {
       "name": "course",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(10)",
+          "type": "text(10)",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "name": {
           "name": "name",
-          "type": "varchar(50)",
+          "type": "text(50)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "autoincrement": false
         },
         "unit": {
           "name": "unit",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -214,108 +187,95 @@
     },
     "professors_courses": {
       "name": "professors_courses",
-      "schema": "",
       "columns": {
         "course_id": {
           "name": "course_id",
-          "type": "varchar(10)",
+          "type": "text(10)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "group_id": {
           "name": "group_id",
-          "type": "varchar(10)",
+          "type": "text(10)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
-        "session_length": {
-          "name": "session_length",
-          "type": "interval[]",
+        "course_duration": {
+          "name": "course_duration",
+          "type": "real",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "course_date": {
           "name": "course_date",
-          "type": "time[]",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
+        },
+        "course_start_time": {
+          "name": "course_start_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         },
         "class_id": {
           "name": "class_id",
-          "type": "varchar(10)",
+          "type": "text(10)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "professors_courses_course_id_course_id_fk": {
-          "name": "professors_courses_course_id_course_id_fk",
-          "tableFrom": "professors_courses",
-          "tableTo": "course",
-          "columnsFrom": [
-            "course_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "professors_courses_group_id_user_info_id_fk": {
-          "name": "professors_courses_group_id_user_info_id_fk",
-          "tableFrom": "professors_courses",
-          "tableTo": "user_info",
-          "columnsFrom": [
-            "group_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {
-        "professors_courses_course_id_group_id_course_date_class_id_session_length": {
-          "name": "professors_courses_course_id_group_id_course_date_class_id_session_length",
+        "professors_courses_course_id_group_id_course_duration_class_id_course_date_course_start_time_pk": {
           "columns": [
-            "course_id",
-            "group_id",
-            "course_date",
             "class_id",
-            "session_length"
+            "course_date",
+            "course_duration",
+            "course_id",
+            "course_start_time",
+            "group_id"
           ]
         }
       }
     },
     "student_info": {
       "name": "student_info",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(10)",
+          "type": "text(10)",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "firstname": {
           "name": "firstname",
-          "type": "varchar(50)",
+          "type": "text(50)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "lastname": {
           "name": "lastname",
-          "type": "varchar(50)",
+          "type": "text(50)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "personnel_id": {
           "name": "personnel_id",
-          "type": "varchar(10)",
+          "type": "text(10)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -324,7 +284,6 @@
     }
   },
   "enums": {},
-  "schemas": {},
   "_meta": {
     "schemas": {},
     "tables": {},

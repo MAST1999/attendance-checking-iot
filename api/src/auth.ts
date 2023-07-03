@@ -2,28 +2,25 @@ import { Elysia, t } from "elysia";
 import { cookie } from "@elysiajs/cookie";
 
 import { Lucia } from "@elysiajs/lucia-auth";
-import { pg } from "@lucia-auth/adapter-postgresql";
+import { betterSqlite3 } from "@lucia-auth/adapter-sqlite";
 
-import postgres from "pg";
 import { init } from "@paralleldrive/cuid2";
-import { drizzle } from "drizzle-orm/node-postgres";
+import { drizzle } from "drizzle-orm/bun-sqlite";
 import { user, userInfo } from "./schema/authSchema";
 import { schema } from "./schema/schema";
 import { logger } from "@bogeychan/elysia-logger";
 import { stream } from ".";
 import { course, professorToCourse } from "./schema/courseSchema";
 import { ne } from "drizzle-orm";
+import { Database } from "bun:sqlite";
 
+const sqlite = new Database(process.env.DATABASE_URL);
 const createId = init({ length: 10 });
 
-const connectionPool = new postgres.Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-
-export const db = drizzle(connectionPool, { schema });
+export const db = drizzle(sqlite, { schema });
 
 const lucia = Lucia({
-  adapter: pg(connectionPool),
+  adapter: betterSqlite3(sqlite),
   transformDatabaseUser: (databaseUser) => {
     return {
       userId: databaseUser.id,
@@ -66,7 +63,7 @@ export const auth = (app: Elysia) =>
               role: "user",
             },
           })) as { userId: string; personnelId: string };
-          await db.insert(userInfo).values({
+          db.insert(userInfo).values({
             isProfessor,
             id: createId(),
             firstname,

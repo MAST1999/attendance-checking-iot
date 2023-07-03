@@ -1,30 +1,28 @@
 import { relations } from "drizzle-orm";
-import { bigint, boolean, pgTable, varchar } from "drizzle-orm/pg-core";
+import { sqliteTable, text, integer, blob } from "drizzle-orm/sqlite-core";
 
-export const user = pgTable("auth_user", {
-  id: varchar("id", {
+export const user = sqliteTable("auth_user", {
+  id: text("id", {
     // change this when using custom user ids
     length: 15,
   }).primaryKey(),
   // other user attributes
-  personnelId: varchar("personnel_id", { length: 10 }).notNull(),
-  role: varchar("role", { enum: ["admin", "user"] }),
+  personnelId: text("personnel_id", { length: 10 }).notNull(),
+  role: text("role", { enum: ["admin", "user"] }),
 });
 
-export const userInfo = pgTable("user_info", {
-  id: varchar("id", {
+export const userInfo = sqliteTable("user_info", {
+  id: text("id", {
     // change this when using custom user ids
     length: 10,
   }).primaryKey(),
-  userId: varchar("user_id", {
+  userId: text("user_id", {
     // change this when using custom user ids
     length: 15,
-  })
-    .notNull()
-    .references(() => user.id),
-  firstname: varchar("firstname", { length: 50 }).notNull(),
-  lastname: varchar("lastname", { length: 50 }).notNull(),
-  isProfessor: boolean("is_professor").default(false),
+  }).notNull(),
+  firstname: text("firstname", { length: 50 }).notNull(),
+  lastname: text("lastname", { length: 50 }).notNull(),
+  isProfessor: integer("is_professor", { mode: "boolean" }).default(false),
 });
 
 export const userRelations = relations(user, ({ one }) => ({
@@ -34,37 +32,33 @@ export const userRelations = relations(user, ({ one }) => ({
   }),
 }));
 
-export const session = pgTable("auth_session", {
-  id: varchar("id", {
+export const session = sqliteTable("auth_session", {
+  id: text("id", {
     length: 128,
   }).primaryKey(),
-  userId: varchar("user_id", {
+  userId: text("user_id", {
     length: 15,
-  })
-    .notNull()
-    .references(() => user.id),
-  activeExpires: bigint("active_expires", {
-    mode: "number",
   }).notNull(),
-  idleExpires: bigint("idle_expires", {
-    mode: "number",
+  activeExpires: blob("active_expires", {
+    mode: "bigint",
+  }).notNull(),
+  idleExpires: blob("idle_expires", {
+    mode: "bigint",
   }).notNull(),
 });
 
-export const key = pgTable("auth_key", {
-  id: varchar("id", {
+export const key = sqliteTable("auth_key", {
+  id: text("id", {
     length: 255,
   }).primaryKey(),
-  userId: varchar("user_id", {
+  userId: text("user_id", {
     length: 15,
-  })
-    .notNull()
-    .references(() => user.id),
-  primaryKey: boolean("primary_key").notNull(),
-  hashedPassword: varchar("hashed_password", {
+  }).notNull(),
+  primaryKey: integer("primary_key", { mode: "boolean" }).notNull(),
+  hashedPassword: text("hashed_password", {
     length: 255,
   }),
-  expires: bigint("expires", {
-    mode: "number",
+  expires: blob("expires", {
+    mode: "bigint",
   }),
 });

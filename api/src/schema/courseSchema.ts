@@ -1,44 +1,47 @@
 import { relations } from "drizzle-orm";
 import {
+  sqliteTable,
+  text,
   integer,
-  interval,
-  pgTable,
+  real,
   primaryKey,
-  time,
-  varchar,
-} from "drizzle-orm/pg-core";
+} from "drizzle-orm/sqlite-core";
 import { userInfo } from "./authSchema";
 
-export const course = pgTable("course", {
-  id: varchar("id", {
+export const course = sqliteTable("course", {
+  id: text("id", {
     // change this when using custom user ids
     length: 10,
   }).primaryKey(),
-  name: varchar("name", { length: 50 }).notNull(),
+  name: text("name", { length: 50 }).notNull(),
   unit: integer("unit").notNull(),
 });
 
-export const professorToCourse = pgTable(
+export const professorToCourse = sqliteTable(
   "professors_courses",
   {
-    courseId: varchar("course_id", {
+    courseId: text("course_id", {
       // change this when using custom user ids
       length: 10,
-    })
-      .notNull()
-      .references(() => course.id),
-    professorId: varchar("group_id", {
+    }).notNull(),
+    professorId: text("group_id", {
       // change this when using custom user ids
       length: 10,
-    })
-      .notNull()
-      .references(() => userInfo.id),
-    sessionLength: interval("session_length").array(),
-    date: time("course_date").array(),
-    class: varchar("class_id", { length: 10 }),
+    }).notNull(),
+    duration: real("course_duration"),
+    date: integer("course_date", { mode: "timestamp" }),
+    startTime: integer("course_start_time", { mode: "timestamp" }),
+    class: text("class_id", { length: 10 }),
   },
   (t) => ({
-    pk: primaryKey(t.courseId, t.professorId, t.date, t.class, t.sessionLength),
+    pk: primaryKey(
+      t.courseId,
+      t.professorId,
+      t.duration,
+      t.class,
+      t.date,
+      t.startTime
+    ),
   })
 );
 
