@@ -112,13 +112,37 @@ export const auth = (app: Elysia) =>
             const { sessionId } = await lucia.createSession(userId);
             setCookie("session", sessionId);
 
-            const userInfo = db.query.user.findFirst({
-              where: eq(user.id, personnelId),
-              with: { userInfo: true },
-            });
-            log.info(userInfo, "User logged in");
-            return userInfo;
-          } catch {
+            const userInformation = db
+              .select({
+                personnelId: user.personnelId,
+                role: user.role,
+                firstname: userInfo.firstname,
+                lastname: userInfo.lastname,
+                isProfessor: userInfo.isProfessor,
+              })
+              .from(user)
+              .where(eq(user.id, userId))
+              .leftJoin(userInfo, eq(user.id, userInfo.userId))
+              .limit(1)
+              .all()[0];
+            // const userInformation = db.query.user.findFirst({
+            //   where: eq(user.id, userId),
+            //   columns: { personnelId: true, role: true },
+            //   with: {
+            //     userInfo: {
+            //       columns: {
+            //         firstname: true,
+            //         isProfessor: true,
+            //         lastname: true,
+            //       },
+            //     },
+            //   },
+            // });
+
+            log.info(userInformation, "User logged in");
+            return userInformation;
+          } catch (e) {
+            log.error(e, "Sign in failed");
             set.status = 401;
 
             return "Invalid username or password";

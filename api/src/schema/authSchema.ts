@@ -8,7 +8,7 @@ export const user = sqliteTable("auth_user", {
   }).primaryKey(),
   // other user attributes
   personnelId: text("personnel_id", { length: 10 }).notNull(),
-  role: text("role", { enum: ["admin", "user"] }),
+  role: text("role", { enum: ["admin", "user"] }).notNull(),
 });
 
 export const userInfo = sqliteTable("user_info", {
