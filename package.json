@@ -2,9 +2,14 @@
   "name": "attendance-checking-iot",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "dev:client": "pnpm --filter client run dev",
+    "dev:api": "bun run --watch api/src/index.ts"
+  },
   "devDependencies": {},
   "peerDependencies": {},
   "workspaces": [
-    "api"
+    "api",
+    "client"
   ]
 }
