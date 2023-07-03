@@ -4,6 +4,7 @@ import { logger } from "@bogeychan/elysia-logger";
 import { migrate } from "drizzle-orm/bun-sqlite/migrator";
 import pretty from "pino-pretty";
 import { userInfo } from "./schema/authSchema";
+import cors from "@elysiajs/cors";
 
 migrate(db, { migrationsFolder: "drizzle" });
 
@@ -17,6 +18,7 @@ export const stream = pretty({
 });
 
 const app = new Elysia()
+  .use(cors())
   .use(logger({ stream }))
   .state("db", db)
   .use(auth)

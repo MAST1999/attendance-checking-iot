@@ -9,6 +9,7 @@
   "dependencies": {
     "@bogeychan/elysia-logger": "^0.0.2",
     "@elysiajs/cookie": "^0.5.2",
+    "@elysiajs/cors": "^0.5.2",
     "@elysiajs/lucia-auth": "latest",
     "@lucia-auth/adapter-sqlite": "^1.1.1",
     "@paralleldrive/cuid2": "^2.2.1",

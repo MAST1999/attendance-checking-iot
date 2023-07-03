@@ -11,7 +11,7 @@ import { schema } from "./schema/schema";
 import { logger } from "@bogeychan/elysia-logger";
 import { stream } from ".";
 import { course, professorToCourse } from "./schema/courseSchema";
-import { ne } from "drizzle-orm";
+import { eq, ne } from "drizzle-orm";
 import { Database } from "bun:sqlite";
 import { TSchema } from "@sinclair/typebox";
 
@@ -101,7 +101,7 @@ export const auth = (app: Elysia) =>
       )
       .post(
         "/sign-in",
-        async ({ set, setCookie, body: { personnelId, password } }) => {
+        async ({ log, set, setCookie, body: { personnelId, password } }) => {
           try {
             const { userId } = await lucia.useKey(
               "personnel_id",
@@ -112,7 +112,12 @@ export const auth = (app: Elysia) =>
             const { sessionId } = await lucia.createSession(userId);
             setCookie("session", sessionId);
 
-            return `Sign in as ${personnelId}`;
+            const userInfo = db.query.user.findFirst({
+              where: eq(user.id, personnelId),
+              with: { userInfo: true },
+            });
+            log.info(userInfo, "User logged in");
+            return userInfo;
           } catch {
             set.status = 401;
 
