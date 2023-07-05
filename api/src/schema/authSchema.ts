@@ -3,7 +3,6 @@ import { sqliteTable, text, integer, blob } from "drizzle-orm/sqlite-core";
 
 export const user = sqliteTable("auth_user", {
   id: text("id", {
-    // change this when using custom user ids
     length: 15,
   }).primaryKey(),
   // other user attributes
@@ -13,11 +12,9 @@ export const user = sqliteTable("auth_user", {
 
 export const userInfo = sqliteTable("user_info", {
   id: text("id", {
-    // change this when using custom user ids
     length: 10,
   }).primaryKey(),
   userId: text("user_id", {
-    // change this when using custom user ids
     length: 15,
   }).notNull(),
   firstname: text("firstname", { length: 50 }).notNull(),

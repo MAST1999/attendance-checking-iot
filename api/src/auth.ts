@@ -10,19 +10,19 @@ import { user, userInfo } from "./schema/authSchema";
 import { schema } from "./schema/schema";
 import { logger } from "@bogeychan/elysia-logger";
 import { stream } from ".";
-import { course, professorToCourse } from "./schema/courseSchema";
+import { course, daysOfWeek, professorToCourse } from "./schema/courseSchema";
 import { eq, ne } from "drizzle-orm";
 import { Database } from "bun:sqlite";
-import { TSchema } from "@sinclair/typebox";
+import { student } from "./schema/studentSchema";
 
 const sqlite = new Database(process.env.DATABASE_URL);
 const createId = init({ length: 10 });
 
-const Nullable = <T extends TSchema>(schema: T) => t.Union([schema, t.Null()]);
-
 export const db = drizzle(sqlite, { schema });
+const DaysOfWeek = t.Union(daysOfWeek.map((d) => t.Literal(d)));
 
 const lucia = Lucia({
+  // @ts-ignore
   adapter: betterSqlite3(sqlite),
   transformDatabaseUser: (databaseUser) => {
     return {
@@ -224,8 +224,9 @@ export const auth = (app: Elysia) =>
         async ({ body, log }) => {
           const createdCourse = db
             .insert(course)
-            .values({ id: createId(), ...body })
-            .returning();
+            .values({ ...body })
+            .returning()
+            .all()[0];
 
           log.info(createdCourse, "Added new course");
 
@@ -243,11 +244,22 @@ export const auth = (app: Elysia) =>
       })
       .post(
         "/new-class",
-        ({ body, log }) => {
+        ({ body, log, set }) => {
+          const newBody = {
+            ...body,
+            startDate: new Date(body.startDate),
+            duration: body.duration as `${number}:${number}`,
+          };
+          if (newBody.startDate.toString() === "Invalid Date") {
+            set.status = 400;
+            return { message: "Invalid start date" };
+          }
+
           const newClass = db
             .insert(professorToCourse)
-            .values({ ...body })
-            .returning();
+            .values({ ...newBody })
+            .returning()
+            .all()[0];
 
           log.info(newClass, "New Class registered");
           return newClass;
@@ -256,9 +268,91 @@ export const auth = (app: Elysia) =>
           body: t.Object({
             class: t.String({ maxLength: 10 }),
             professorId: t.String({ minLength: 10 }),
-            courseId: t.String({ minLength: 10 }),
-            firstSession: t.Date(),
-            secondSession: Nullable(t.Date()),
+            courseName: t.String({ minLength: 3 }),
+            courseUnit: t.Number({ minimum: 1, maximum: 4 }),
+            firstDay: DaysOfWeek,
+            secondDay: t.Optional(DaysOfWeek),
+            startDate: t.String(),
+            duration: t.TemplateLiteral([
+              t.RegEx(/^([0-2][0-9])$/),
+              t.Literal(":"),
+              t.RegEx(/^([0-9]{2})$/),
+            ]),
+          }),
+        }
+      )
+      .get("/classes", () => {
+        return db.query.professorToCourse.findMany();
+      })
+      .patch(
+        "/class",
+        ({ body, log, set }) => {
+          const startDate = body.startDate
+            ? new Date(body.startDate)
+            : undefined;
+          const duration = body.duration as `${number}:${number}`;
+
+          if (
+            startDate !== undefined &&
+            startDate.toString() === "Invalid Date"
+          ) {
+            set.status = 400;
+            return { message: "Start Date is invalid" };
+          }
+
+          const updatedClass = db
+            .update(professorToCourse)
+            .set({ ...body, startDate, duration })
+            .returning()
+            .all()[0];
+          log.info(updatedClass, "Updated Class");
+          return updatedClass;
+        },
+        {
+          body: t.Object({
+            class: t.Optional(t.String({ maxLength: 10 })),
+            professorId: t.Optional(t.String({ minLength: 10 })),
+            courseId: t.Optional(t.String({ minLength: 10 })),
+            firstDay: DaysOfWeek,
+            startDate: t.Optional(t.String()),
+            secondDay: t.Optional(DaysOfWeek),
+            duration: t.Optional(
+              t.TemplateLiteral([
+                t.RegEx(/^([0-2][0-9])$/),
+                t.Literal(":"),
+                t.RegEx(/^([0-9]{2})$/),
+              ])
+            ),
+          }),
+        }
+      )
+      .get("/student/:studentId/classes", ({ params: { studentId } }) => {
+        return db.query.student.findFirst({
+          where: eq(student.studentId, studentId),
+          with: { studentToClasses: { with: { class: true } } },
+        });
+      })
+      .post(
+        "/student",
+        ({ body, log }) => {
+          const st = db
+            .insert(student)
+            .values({ ...body, id: createId() })
+            .returning()
+            .all()[0];
+
+          log.info(st, "Added new student");
+          return st;
+        },
+        {
+          body: t.Object({
+            firstname: t.String({ maxLength: 50, minLength: 2 }),
+            lastname: t.String({ maxLength: 50, minLength: 2 }),
+            studentId: t.String({
+              minLength: 10,
+              maxLength: 10,
+              pattern: `\[0-9]{10}$`,
+            }),
           }),
         }
       )
