@@ -23,7 +23,8 @@
   },
   "devDependencies": {
     "bun-types": "latest",
-    "drizzle-kit": "latest"
+    "drizzle-kit": "latest",
+    "typescript": "^5.1.6"
   },
   "module": "src/index.js"
 }
