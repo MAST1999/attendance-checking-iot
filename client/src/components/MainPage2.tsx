@@ -15,41 +15,52 @@ export default function MainPage(): JSX.Element {
   };
 
   const authMutation = useAuthentication();
-
   return (
     <div className="grid grid-rows-1 grid-cols-1 w-[100%] h-[100%] overflow-hidden md:grid-cols-2">
       <div className="hidden bg-bg-main bg-no-repeat bg-cover bg-black md:block" />
       <div className="m-auto">
-        <p className="font-mono text-xl">
-          Enter Admin username and password below
-        </p>
         <div className="flex flex-col w-[100%] justify-center items-center font-mono">
-          <input
-            type="text"
-            placeholder="Admin username"
-            className="mt-3 h-10 p-3 rounded-md"
-            onChange={handleUser}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Admin password"
-            className="mt-3 h-10 p-3 rounded-md"
-            onChange={handlePass}
-            required
-          />
+          <div className="form-control w-full max-w-xs">
+            <label className="label">
+              <span className="label-text">Admin Username</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Admin username"
+              className="input input-bordered input-primary w-full max-w-xs"
+              onChange={handleUser}
+              required
+            />
+          </div>
+            <div className="form-control w-full max-w-xs">
+            <label className="label mt-3">
+              <span className="label-text">Admin Password</span>
+            </label>
+            <input
+              type="password"
+              placeholder="Admin password"
+              className="input input-bordered input-primary w-full max-w-xs"
+              onChange={handlePass}
+              required
+            />
+          </div>
           <button
-            className="loginBtn"
+            className="btn btn-primary mt-3"
             onClick={() => {
-              console.log("hello");
               authMutation.mutate({
                 password: userPass.password,
                 personnelId: userPass.username,
               });
             }}
+            disabled={authMutation.isLoading}
           >
             Login
           </button>
+          {authMutation.isSuccess && (
+            <>
+              <p className="mt-3">welcome {authMutation.data.firstname}</p>
+            </>
+          )}
         </div>
       </div>
     </div>

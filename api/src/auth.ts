@@ -122,7 +122,7 @@ export const auth = (app: Elysia) =>
               personnelId,
               password
             );
-
+            console.log("az inja rad shod");
             const { sessionId } = await lucia.createSession(userId);
             setCookie("session", sessionId);
 

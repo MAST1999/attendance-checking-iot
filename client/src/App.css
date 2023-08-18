@@ -3,13 +3,5 @@
 @tailwind utilities;
 
 #root {
-    @apply h-screen w-screen flex justify-center items-center bg-gradient-to-br from-stone-600 to-slate-50;
-}
-
-.button {
-    @apply focus:outline-none w-[40%] h-12 rounded-2xl bg-blue-500 text-white border-2 hover:border-blue-500 hover:bg-white hover:text-blue-500 transition-all active:bg-blue-100 min-w-[250px];
-}
-
-.loginBtn {
-    @apply w-[120px] focus:outline-none mt-3 border-2 border-slate-500 text-slate-500 hover:text-white hover:bg-slate-500 hover:border-transparent transition-all active:bg-stone-200 active:text-slate-600;
+    @apply h-screen w-screen flex justify-center items-center;
 }
