@@ -13,7 +13,7 @@ import { stream } from ".";
 import { course, daysOfWeek, professorToCourse } from "./schema/courseSchema";
 import { eq, ne } from "drizzle-orm";
 import { Database } from "bun:sqlite";
-import { student } from "./schema/studentSchema";
+import { student, studentToClasses } from "./schema/studentSchema";
 
 const sqlite = new Database(process.env.DATABASE_URL);
 const createId = init({ length: 10 });
@@ -54,8 +54,22 @@ export const auth = (app: Elysia) =>
         async ({
           body: { personnelId, password, isProfessor, firstname, lastname },
           log,
+          cookie: { session },
+          set,
         }) => {
-          const user = (await lucia.createUser({
+          const { userId: id } = await lucia.getSession(session);
+          const mainUser = db
+            .select()
+            .from(user)
+            .where(eq(user.id, id))
+            .limit(1)
+            .all()[0];
+
+          if (!mainUser || mainUser.role !== "admin") {
+            set.status = 406;
+            return { message: "Access Denied" };
+          }
+          const createUser = (await lucia.createUser({
             primaryKey: {
               providerId: "personnel_id",
               providerUserId: personnelId,
@@ -73,12 +87,12 @@ export const auth = (app: Elysia) =>
               id: createId(),
               firstname,
               lastname,
-              userId: user.userId,
+              userId: createUser.userId,
             })
             .run();
 
-          log.info(user, "Created New User");
-          return user;
+          log.info(createUser, "Created New User");
+          return createUser;
         },
         {
           body: t.Intersect([
@@ -125,19 +139,6 @@ export const auth = (app: Elysia) =>
               .leftJoin(userInfo, eq(user.id, userInfo.userId))
               .limit(1)
               .all()[0];
-            // const userInformation = db.query.user.findFirst({
-            //   where: eq(user.id, userId),
-            //   columns: { personnelId: true, role: true },
-            //   with: {
-            //     userInfo: {
-            //       columns: {
-            //         firstname: true,
-            //         isProfessor: true,
-            //         lastname: true,
-            //       },
-            //     },
-            //   },
-            // });
 
             log.info(userInformation, "User logged in");
             return userInformation;
@@ -237,11 +238,18 @@ export const auth = (app: Elysia) =>
             name: t.String({ maxLength: 50 }),
             unit: t.Number({ maximum: 4, minimum: 1 }),
           }),
+          beforeHandle: lucia.sessionGuard,
         }
       )
-      .get("/course", () => {
-        return db.query.course.findMany();
-      })
+      .get(
+        "/course",
+        () => {
+          return db.query.course.findMany();
+        },
+        {
+          beforeHandle: lucia.sessionGuard,
+        }
+      )
       .post(
         "/new-class",
         ({ body, log, set }) => {
@@ -274,9 +282,9 @@ export const auth = (app: Elysia) =>
             secondDay: t.Optional(DaysOfWeek),
             startDate: t.String(),
             duration: t.TemplateLiteral([
-              t.RegEx(/^([0-2][0-9])$/),
+              t.RegExp(/^([0-2][0-9])$/),
               t.Literal(":"),
-              t.RegEx(/^([0-9]{2})$/),
+              t.RegExp(/^([0-9]{2})$/),
             ]),
           }),
         }
@@ -318,20 +326,37 @@ export const auth = (app: Elysia) =>
             secondDay: t.Optional(DaysOfWeek),
             duration: t.Optional(
               t.TemplateLiteral([
-                t.RegEx(/^([0-2][0-9])$/),
+                t.RegExp(/^([0-2][0-9])$/),
                 t.Literal(":"),
-                t.RegEx(/^([0-9]{2})$/),
+                t.RegExp(/^([0-9]{2})$/),
               ])
             ),
           }),
+          beforeHandle: lucia.sessionGuard,
         }
       )
-      .get("/student/:studentId/classes", ({ params: { studentId } }) => {
-        return db.query.student.findFirst({
-          where: eq(student.studentId, studentId),
-          with: { studentToClasses: { with: { class: true } } },
-        });
-      })
+      .get(
+        "/student/:studentId/classes",
+        ({ params: { studentId } }) => {
+          return db
+            .select()
+            .from(student)
+            .where(eq(student.id, studentId))
+            .leftJoin(
+              studentToClasses,
+              eq(studentToClasses.studentId, studentId)
+            )
+            .limit(1)
+            .all();
+          // .findFirst({
+          //     where: ,
+          //     with: { studentToClasses: { with: { class: true } } },
+          //   });
+        },
+        {
+          beforeHandle: lucia.sessionGuard,
+        }
+      )
       .post(
         "/student",
         ({ body, log }) => {
@@ -354,14 +379,21 @@ export const auth = (app: Elysia) =>
               pattern: `\[0-9]{10}$`,
             }),
           }),
+          beforeHandle: lucia.sessionGuard,
         }
       )
-      .get("/all-users", () => {
-        return db.query.user.findMany({
-          where: ne(user.id, "adminuser1"),
-          with: { userInfo: true },
-        });
-      })
+      .get(
+        "/all-users",
+        () => {
+          return db.query.user.findMany({
+            where: ne(user.id, "adminuser1"),
+            with: { userInfo: true },
+          });
+        },
+        {
+          beforeHandle: lucia.sessionGuard,
+        }
+      )
   );
 
 export default auth;
