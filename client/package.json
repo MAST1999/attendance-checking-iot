@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@elysiajs/eden": "^0.6.1",
     "@tanstack/react-query": "^4.29.19",
+    "elysia": "^0.6.11",
     "ky": "^0.33.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
