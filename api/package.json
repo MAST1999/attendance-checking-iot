@@ -12,6 +12,7 @@
     "@elysiajs/cookie": "^0.5.2",
     "@elysiajs/cors": "^0.5.2",
     "@elysiajs/lucia-auth": "latest",
+    "@elysiajs/static": "^0.6.0",
     "@lucia-auth/adapter-sqlite": "^1.1.1",
     "@paralleldrive/cuid2": "^2.2.1",
     "@types/pg": "^8.10.2",

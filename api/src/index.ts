@@ -3,6 +3,7 @@ import { Elysia } from "elysia";
 import { migrate } from "drizzle-orm/bun-sqlite/migrator";
 import pretty from "pino-pretty";
 import cors from "@elysiajs/cors";
+import { staticPlugin } from "@elysiajs/static";
 
 migrate(db, { migrationsFolder: "drizzle" });
 
@@ -16,10 +17,11 @@ export const stream = pretty({
 });
 
 const app = new Elysia()
-  .use(cors())
+  .use(cors({ origin: true }))
+  .use(staticPlugin({ prefix: "" }))
   .state("db", db)
   .use(auth)
-  .get("/", () => `Hello Elysia`)
+  .get("/", () => Bun.file("public/index.html"))
   .listen(3000);
 
 export type Server = typeof app;

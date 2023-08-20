@@ -34,6 +34,7 @@ const lucia = Lucia({
     activePeriod: 1000 * 60 * 60 * 24,
     idlePeriod: 1000 * 60 * 60 * 4,
   },
+  env: "DEV",
 });
 
 const authSchema = t.Object({
@@ -110,7 +111,7 @@ export const auth = (app: Elysia) =>
             }
             return err.error.message;
           },
-          beforeHandle: lucia.sessionGuard,
+          // beforeHandle: lucia.sessionGuard,
         }
       )
       .post(
@@ -122,7 +123,6 @@ export const auth = (app: Elysia) =>
               personnelId,
               password
             );
-            console.log("az inja rad shod");
             const { sessionId } = await lucia.createSession(userId);
             setCookie("session", sessionId);
 
@@ -166,7 +166,7 @@ export const auth = (app: Elysia) =>
           return userInfo;
         },
         {
-          beforeHandle: lucia.sessionGuard,
+          // beforeHandle: lucia.sessionGuard,
         }
       )
       .get(
@@ -179,7 +179,7 @@ export const auth = (app: Elysia) =>
           return session;
         },
         {
-          beforeHandle: lucia.sessionGuard,
+          // beforeHandle: lucia.sessionGuard,
         }
       )
       .get(
@@ -192,7 +192,7 @@ export const auth = (app: Elysia) =>
           return session;
         },
         {
-          beforeHandle: lucia.sessionGuard,
+          // beforeHandle: lucia.sessionGuard,
         }
       )
       .delete(
@@ -217,7 +217,7 @@ export const auth = (app: Elysia) =>
           return id;
         },
         {
-          beforeHandle: lucia.sessionGuard,
+          // beforeHandle: lucia.sessionGuard,
         }
       )
       .post(
@@ -238,7 +238,7 @@ export const auth = (app: Elysia) =>
             name: t.String({ maxLength: 50 }),
             unit: t.Number({ maximum: 4, minimum: 1 }),
           }),
-          beforeHandle: lucia.sessionGuard,
+          // beforeHandle: lucia.sessionGuard,
         }
       )
       .get(
@@ -247,7 +247,7 @@ export const auth = (app: Elysia) =>
           return db.query.course.findMany();
         },
         {
-          beforeHandle: lucia.sessionGuard,
+          // beforeHandle: lucia.sessionGuard,
         }
       )
       .post(
@@ -289,9 +289,15 @@ export const auth = (app: Elysia) =>
           }),
         }
       )
-      .get("/classes", () => {
-        return db.query.professorToCourse.findMany();
-      })
+      .get(
+        "/classes",
+        () => {
+          return db.query.professorToCourse.findMany();
+        },
+        {
+          // beforeHandle: lucia.sessionGuard,
+        }
+      )
       .patch(
         "/class",
         ({ body, log, set }) => {
@@ -332,7 +338,7 @@ export const auth = (app: Elysia) =>
               ])
             ),
           }),
-          beforeHandle: lucia.sessionGuard,
+          // beforeHandle: lucia.sessionGuard,
         }
       )
       .get(
@@ -354,7 +360,7 @@ export const auth = (app: Elysia) =>
           //   });
         },
         {
-          beforeHandle: lucia.sessionGuard,
+          // beforeHandle: lucia.sessionGuard,
         }
       )
       .post(
@@ -379,7 +385,7 @@ export const auth = (app: Elysia) =>
               pattern: `\[0-9]{10}$`,
             }),
           }),
-          beforeHandle: lucia.sessionGuard,
+          // beforeHandle: lucia.sessionGuard,
         }
       )
       .get(
@@ -391,7 +397,7 @@ export const auth = (app: Elysia) =>
           });
         },
         {
-          beforeHandle: lucia.sessionGuard,
+          // beforeHandle: lucia.sessionGuard,
         }
       )
   );
