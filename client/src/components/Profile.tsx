@@ -3,17 +3,6 @@ import ky from "ky";
 import { useRef } from "react";
 import { baseURL } from "../utils";
 
-// id: string;
-//     personnelId: string;
-//     role: "admin" | "user";
-//     userInfo: {
-//         id: string;
-//         userId: string;
-//         firstname: string;
-//         lastname: string;
-//         isProfessor: boolean | null;
-//     };
-
 const Profile = ({className}: {className: string}) => {
 
     const modal = useRef<HTMLDialogElement>()

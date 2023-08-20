@@ -5,15 +5,14 @@ import { baseURL } from "../utils"
 type Props = {
     className: string
 }
-
+// const signOut = async () => {
+    //     return await ky.get(`${baseURL}/auth/sign-out`);
+    // }
 const SignOut = ({className}: Props) => {
-    const signOut = async () => {
-        return await ky.get(`${baseURL}/auth/sign-out`);
-    }
-    const {} = useQuery(["signout"], {
-        queryFn: signOut,
-        staleTime: Infinity
-    });
+    // const {} = useQuery(["signout"], {
+    //     queryFn: signOut,
+    //     staleTime: Infinity
+    // });
 
     return(
         <button className={className}>Sign out</button>
