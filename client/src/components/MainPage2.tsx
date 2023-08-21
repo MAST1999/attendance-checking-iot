@@ -24,7 +24,7 @@ export default function MainPage(): JSX.Element {
         <div className="flex flex-col w-[100%] justify-center items-center font-mono">
           <div className="form-control w-full max-w-xs">
             <label className="label">
-              <span className="label-text">Admin Username</span>
+              <span className="label-text">Username:</span>
             </label>
             <input
               type="text"
@@ -36,7 +36,7 @@ export default function MainPage(): JSX.Element {
           </div>
             <div className="form-control w-full max-w-xs">
             <label className="label mt-3">
-              <span className="label-text">Admin Password</span>
+              <span className="label-text">Password:</span>
             </label>
             <input
               type="password"
