@@ -411,7 +411,7 @@ const AddClass = () => {
                     : ""
                 }
               >
-                {!addClassMutation.isLoading ? "add class" : ""}
+                {addClassMutation.isLoading ? "" : "add class"}
               </span>
             </button>
           </div>
