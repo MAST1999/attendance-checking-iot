@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useAuthentication } from "./useAuth";
+import { useNavigate } from "react-router-dom";
 
 export default function MainPage(): JSX.Element {
   const [userPass, setUserPass] = useState({ username: "", password: "" });
+  const homePage = useNavigate()
 
   const handleUser = (e: React.ChangeEvent) => {
     const target = e.target as HTMLButtonElement;
@@ -51,6 +53,11 @@ export default function MainPage(): JSX.Element {
                 password: userPass.password,
                 personnelId: userPass.username,
               });
+              if(authMutation.isSuccess){
+                setTimeout(() => {
+                  homePage('/home', { replace: true });
+                }, 3000);
+              }
             }}
             disabled={authMutation.isLoading}
           >
