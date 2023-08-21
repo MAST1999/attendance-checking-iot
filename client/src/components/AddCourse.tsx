@@ -3,7 +3,12 @@ import { baseURL } from "../utils";
 import { useMutation } from "@tanstack/react-query";
 import { FormEvent, useRef, useState } from "react";
 
-const addCourse = async (courseInfo) => {
+interface CourseInfo {
+  name: string,
+  unit: number,
+}
+
+const addCourse = async (courseInfo: CourseInfo) => {
   const res = await ky.post(`${baseURL}/auth/course`, { json: courseInfo });
   return res;
 };

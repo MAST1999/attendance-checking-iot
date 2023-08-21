@@ -1,6 +1,3 @@
-//patch class
-//post class
-
 import ky from "ky";
 import { baseURL } from "../utils";
 import { useMutation } from "@tanstack/react-query";
