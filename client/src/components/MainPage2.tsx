@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useAuthentication } from "./useAuth";
+import { useNavigate } from "react-router-dom";
 
 export default function MainPage(): JSX.Element {
   const [userPass, setUserPass] = useState({ username: "", password: "" });
+  const homePage = useNavigate()
 
   const handleUser = (e: React.ChangeEvent) => {
     const target = e.target as HTMLButtonElement;
@@ -22,7 +24,7 @@ export default function MainPage(): JSX.Element {
         <div className="flex flex-col w-[100%] justify-center items-center font-mono">
           <div className="form-control w-full max-w-xs">
             <label className="label">
-              <span className="label-text">Admin Username</span>
+              <span className="label-text">Username:</span>
             </label>
             <input
               type="text"
@@ -34,7 +36,7 @@ export default function MainPage(): JSX.Element {
           </div>
             <div className="form-control w-full max-w-xs">
             <label className="label mt-3">
-              <span className="label-text">Admin Password</span>
+              <span className="label-text">Password:</span>
             </label>
             <input
               type="password"
@@ -51,6 +53,11 @@ export default function MainPage(): JSX.Element {
                 password: userPass.password,
                 personnelId: userPass.username,
               });
+              if(authMutation.isSuccess){
+                setTimeout(() => {
+                  homePage('/home', { replace: true });
+                }, 3000);
+              }
             }}
             disabled={authMutation.isLoading}
           >
